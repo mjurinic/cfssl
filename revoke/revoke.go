@@ -70,30 +70,30 @@ func ldapURL(url string) bool {
 func RevCheck(cert *x509.Certificate) (revoked, ok bool, err error) {
 	for _, url := range cert.CRLDistributionPoints {
 		if ldapURL(url) {
-			log.Infof("skipping LDAP CRL: %s", url)
+			// log.Infof("skipping LDAP CRL: %s", url)
 			continue
 		}
 
 		if revoked, ok, err := certIsRevokedCRL(cert, url); !ok {
-			log.Warning("error checking revocation via CRL")
+			// log.Warning("error checking revocation via CRL")
 			if HardFail {
 				return true, false, err
 			}
 			return false, false, err
 		} else if revoked {
-			log.Info("certificate is revoked via CRL")
+			// log.Info("certificate is revoked via CRL")
 			return true, true, err
 		}
 	}
 
 	if revoked, ok, err := certIsRevokedOCSP(cert, HardFail); !ok {
-		log.Warning("error checking revocation via OCSP")
+		// log.Warning("error checking revocation via OCSP")
 		if HardFail {
 			return true, false, err
 		}
 		return false, false, err
 	} else if revoked {
-		log.Info("certificate is revoked via OCSP")
+		// log.Info("certificate is revoked via OCSP")
 		return true, true, err
 	}
 
