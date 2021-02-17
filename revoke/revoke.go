@@ -52,7 +52,7 @@ func ldapURL(url string) bool {
 	return false
 }
 
-// revCheck should check the certificate for any revocations. It
+// RevCheck should check the certificate for any revocations. It
 // returns a pair of booleans: the first indicates whether the certificate
 // is revoked, the second indicates whether the revocations were
 // successfully checked.. This leads to the following combinations:
@@ -67,7 +67,7 @@ func ldapURL(url string) bool {
 //
 //  true, false:  failure to check revocation status causes
 //                  verification to fail
-func revCheck(cert *x509.Certificate) (revoked, ok bool, err error) {
+func RevCheck(cert *x509.Certificate) (revoked, ok bool, err error) {
 	for _, url := range cert.CRLDistributionPoints {
 		if ldapURL(url) {
 			log.Infof("skipping LDAP CRL: %s", url)
@@ -135,7 +135,7 @@ func getIssuer(cert *x509.Certificate) *x509.Certificate {
 }
 
 // check a cert against a specific CRL. Returns the same bool pair
-// as revCheck, plus an error if one occurred.
+// as RevCheck, plus an error if one occurred.
 func certIsRevokedCRL(cert *x509.Certificate, url string) (revoked, ok bool, err error) {
 	crlLock.Lock()
 	crl, ok := CRLSet[url]
@@ -205,7 +205,7 @@ func VerifyCertificateError(cert *x509.Certificate) (revoked, ok bool, err error
 		log.Info(msg)
 		return true, true, fmt.Errorf(msg)
 	}
-	return revCheck(cert)
+	return RevCheck(cert)
 }
 
 func fetchRemote(url string) (*x509.Certificate, error) {
